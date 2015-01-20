@@ -4,6 +4,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type DSN struct {
@@ -53,6 +54,11 @@ func (d *DSN) Path() string {
 	return d.url.Path
 }
 
+// returns user
+func (d *DSN) User() *url.Userinfo {
+	return d.url.User
+}
+
 // DSN Values
 type DSNValues struct {
 	url.Values
@@ -85,6 +91,15 @@ func (d *DSNValues) GetBool(param string, def bool) bool {
 		return true
 	} else if value == "0" || value == "false" {
 		return false
+	} else {
+		return def
+	}
+}
+
+// returns string value
+func (d *DSNValues) GetSeconds(param string, def time.Duration) time.Duration {
+	if i, err := strconv.Atoi(d.Get(param)); err == nil {
+		return time.Duration(i) * time.Second
 	} else {
 		return def
 	}
